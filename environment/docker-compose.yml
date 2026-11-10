@@ -1,0 +1,31 @@
+# Modo NUBE (por defecto): web + API contra Neon y Atlas, tal como indique environment/.env
+#   docker compose -f environment/docker-compose.yml up --build
+# Modo LOCAL (Postgres y Mongo en contenedores, sembrados): añade el override
+#   docker compose -f environment/docker-compose.yml -f environment/docker-compose.local.yml up --build
+name: cinestart
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: environment/api.Dockerfile
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../src/artefactos:/app/artefactos:ro
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: environment/web.Dockerfile
+      args:
+        VITE_USE_MOCKS: "false"
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

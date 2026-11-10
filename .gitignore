@@ -1,0 +1,25 @@
+# secretos
+.env
+*.env
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+
+# lo que se regenera o pesa demasiado (ver SPEC_PLATAFORMA.md, R3-R5)
+src/artefactos/
+docs/Mongo/
+
+# SO / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
