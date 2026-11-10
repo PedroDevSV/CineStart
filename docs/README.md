@@ -4,14 +4,17 @@
 data/            CSV limpio (tmdb_5000_clean.csv) — no se sube a GitHub
 docs/            documentación (Fase 1: documentación y diseño técnico)
 src/models/      ML: features.py (features, clusters, popularidad) y motor.py (recomendador híbrido)
-src/artefactos/  lo que genera features.py — no se sube; se regenera en segundos
+src/artefactos/  lo que genera features.py — versionado en el repo (25 MB); se puede regenerar
 src/api/         API FastAPI: une la web con Neon, MongoDB Atlas, TMDB y el motor
 src/web/         web (React + Vite)
+environment/     Docker: compose, Dockerfiles y semilla de datos
 ```
 
-## Arrancar todo en local
+> **Forma recomendada de arrancar todo: Docker.** Ver el [README de la raíz](../README.md). Lo de abajo es para desarrollar fuera de contenedores.
 
-1. **Artefactos del modelo:** con el CSV en `data/`, ejecuta:
+## Arrancar todo en local (sin Docker)
+
+1. **Artefactos del modelo:** ya están en `src/artefactos/`. Para regenerarlos, con el CSV en `data/`:
    ```bash
    cd src/models
    pip install pandas scikit-learn pyarrow joblib scipy

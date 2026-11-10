@@ -4,6 +4,7 @@
 > Estado a **9/11/2026** (S7). Próximo hito: **H3 · NF3 el 12/11** (versión funcional de principio a fin). Después: H4 29/11 (panel, tests, accesibilidad) y H5 NF4 el 10/12.
 > Fuentes: `README.md` (raíz, `docs/`, `src/api`, `src/web`, `src/models`), `docs/diapositivas_fase1.txt` y el código de `src/`.
 > **Actualización 9/11:** el modo local se implementó como **override** (`environment/docker-compose.local.yml`) en lugar de perfiles, y los volcados pesados de `docs/` se limpiaron (ver [docs/DATOS.md](./docs/DATOS.md)). Donde este spec habla de "perfil `local`", léase "override local"; los riesgos R3 y R4 quedan resueltos.
+> **Requisitos de la entrega NF3 (12/11, rúbrica del profesor):** el PDF (portada, estado, guía local, evidencias, arquitectura real, índice de código, reproducibilidad) y un repositorio con tag/commit exacto, README, dependencias y `.env` de ejemplo, **pruebas automatizadas con evidencias** y datos/artefactos referenciados según licencia. Esto sube de prioridad la CI de pruebas (§5) y obliga a resolver la reproducibilidad desde un clon limpio. Plan en [TO-DO.md](./TO-DO.md), sección «NF3».
 > Orden de trabajo acordado: **1) Docker → 2) API (endurecer y probar) → 3) CI → 4) repositorio y documentación**. La guía paso a paso está en [TO-DO.md](./TO-DO.md).
 
 ---

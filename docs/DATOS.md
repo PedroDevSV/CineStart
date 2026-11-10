@@ -1,24 +1,22 @@
 # Datos y artefactos del proyecto (resumen)
 
-Aquí queda el contexto de los volcados que los compañeros descargaron en `docs/`. Los archivos pesados se han quitado del repositorio porque ya viven en otro sitio.
+Aquí queda el contexto de los volcados que los compañeros descargaron en `docs/`. Los archivos pesados se movieron a las carpetas donde se usan.
 
 ## Dónde está cada cosa
 
 | Antes en `docs/` | Qué es | Ahora |
 |---|---|---|
-| `artefactos/` (~25 MB) | `embeddings.npy`, `model.joblib`, `movies_features.parquet`, `neighbors_top50.parquet`: salida de `src/models/features.py` | `src/artefactos/` (no se sube a git). Se regenera con `features.py`; el modelo se generó con **scikit-learn 1.7.2** y NumPy 2.x |
+| `artefactos/` (~25 MB) | `embeddings.npy`, `model.joblib`, `movies_features.parquet`, `neighbors_top50.parquet`: salida de `src/models/features.py` | `src/artefactos/`, **versionado en git** para que un clon arranque sin pasos extra. El modelo se generó con **scikit-learn 1.7.2** y NumPy 2.x (fijado en `src/api/requirements.txt`) |
 | `models/` | Copia antigua de `src/models/` | Borrada: idéntica a `src/models/` (menos un README anterior) |
 | `Neon(postgreSQL)/movies.csv`, `movie_genre.csv`, `genres.csv` | Catálogo de Neon | `environment/seed/postgres/` (semilla del Docker local) |
-| `Mongo/movie_details.json` (~38 MB) | Volcado de la colección `movie_details` de Atlas | **Borrado**: la fuente es Atlas. Para sembrar el Mongo local, ver más abajo |
+| `Mongo/movie_details.json` (~38 MB) | Volcado de la colección `movie_details` de Atlas | `environment/seed/mongo/movie_details.json.gz` (8 MB, comprimido; 4.803 documentos). Lo importa el servicio `mongo-seed` |
 | `Mongo/movie_details.jsonl` | Estaba vacío (0 bytes) | Borrado |
 
-Para el modo local de Docker hay que volver a sacar el volcado de Atlas (necesita `mongoexport`, de las MongoDB Database Tools, y el `MONGO_URI` de `environment/.env`):
+Para regenerar el volcado de Mongo desde Atlas (necesita `mongoexport`, de las MongoDB Database Tools, y el `MONGO_URI` de `environment/.env`):
 
 ```bash
-mongoexport --uri "<MONGO_URI>" --db cinestart --collection movie_details --jsonArray --out docs/Mongo/movie_details.json
+mongoexport --uri "<MONGO_URI>" --db cinestart --collection movie_details --jsonArray | gzip -9 > environment/seed/mongo/movie_details.json.gz
 ```
-
-`docs/Mongo/` está en `.gitignore`; con `MONGO_SEED_DIR` se puede apuntar a otra carpeta.
 
 ## PostgreSQL (Neon) · esquema `CineStartUsuariosdb`
 

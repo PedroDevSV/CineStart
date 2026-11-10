@@ -51,15 +51,15 @@ services:
       mongo:
         condition: service_healthy
     volumes:
-      - ${MONGO_SEED_DIR:-../docs/Mongo}:/seed:ro
-    # Importa el array JSON (_id = id de TMDB) solo si la colección está vacía
+      - ./seed/mongo:/seed:ro
+    # Importa el volcado comprimido (array JSON, _id = id de TMDB) solo si la colección está vacía
     entrypoint:
       - sh
       - -c
       - |
         N=$$(mongosh --quiet --host mongo --eval "db.getSiblingDB('cinestart').movie_details.estimatedDocumentCount()")
         if [ "$$N" -gt 0 ]; then echo "movie_details ya tiene $$N documentos"; exit 0; fi
-        mongoimport --host mongo --db cinestart --collection movie_details --jsonArray --file /seed/movie_details.json
+        gunzip -c /seed/movie_details.json.gz | mongoimport --host mongo --db cinestart --collection movie_details --jsonArray
     restart: "no"
 
 volumes:

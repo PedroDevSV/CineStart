@@ -7,6 +7,42 @@ Flujo Git: una rama por bloque (`feature/docker-compose`, `feature/api-seguridad
 
 ---
 
+## 🎯 NF3 · Entrega del 12/11 (Blackboard: PDF + enlaces/evidencias)
+
+**Actividad:** «Producto funcional y repositorio reproducible» (RA4 y RA5, evaluada con rúbrica). Fichero: `NF3_Producto_Funcional_Local_y_Repositorio_NombreAlumno_Apellido1_Apellido2.pdf`.
+
+**El PDF debe llevar:** (1) portada con proyecto, integrantes, fecha y repositorio · (2) estado actual: completo / parcial / pendiente para NF4 · (3) guía de ejecución local desde cero (requisitos, pasos exactos, variables de entorno, orden de arranque) · (4) evidencias: capturas del front, del backend activo y del flujo completo · (5) arquitectura real + diagrama · (6) índice de código con la estructura **real** del repo · (7) repositorio versionado y reproducible.
+
+**Evidencias mínimas del repositorio (obligatorias) → estado de mi parte**
+
+| Requisito | Estado | Qué falta |
+|---|---|---|
+| Enlace al repo y **tag o commit exacto** de entrega | ❌ | Mergear la PR #2 y crear el tag `nf3` (ver bloque N5) |
+| README con requisitos, configuración y comandos | ❌ | README raíz desfasado (describe carpetas y Alembic que no existen). Reescribir (N1) |
+| Fichero de dependencias/lockfile y `.env` de ejemplo sin secretos | ⚠️ | Hay `requirements.txt` (parcialmente fijado), `package-lock.json` y `environment/.env.example`. Fijar versiones con `==` (A9) |
+| **Pruebas automatizadas y evidencias de su resultado** | ⚠️ | La CI solo hace lint + build. Añadir `api-tests` y `motor-tests` (N3) y guardar capturas del resultado |
+| Estructura real del repo y explicación de módulos | ⚠️ | Escribirla en el README (N1) |
+| Datos y artefactos versionados o **referenciados** según licencia y privacidad | ❌ | Un clon limpio **no puede arrancar**: faltan los artefactos, el CSV limpio y el volcado de Mongo (N2) |
+
+**Bloqueo detectado (N2): reproducibilidad desde un clon limpio.** `src/artefactos/` está ignorado por git; `features.py` necesita `tmdb_5000_clean.csv` (no está) o los dos CSV originales de Kaggle (en el repo solo está `tmdb_5000_movies.csv`, sin `credits`); y el Mongo local necesita `movie_details.json` (borrado de `docs/`). Hay que **decidir con el equipo** una de estas vías:
+1. **Versionar los artefactos** (~25 MB; `model.joblib` pesa 20 MB, bajo el límite de 100 MB de GitHub) y una muestra/volcado comprimido de Mongo. Más simple y reproducible al instante.
+2. **Referenciarlos**: subirlos a una *Release* de GitHub y añadir un script `scripts/descargar_datos.ps1/.sh`; o generarlos con `features.py` desde los CSV originales de Kaggle (TMDB 5000, licencia en su página; no se redistribuyen).
+3. Mongo opcional: la API ya arranca sin Mongo (sin emails y con reparto pedido a TMDB). Documentarlo como "modo mínimo".
+
+### Plan hasta el 12/11 (por prioridad)
+
+- [ ] **N1 · README raíz** (🔥): descripción, integrantes y roles, arquitectura real, **requisitos** (Docker Desktop, Git; Node 22 y Python 3.11 solo para desarrollo), **pasos exactos** (clonar → `cp environment/.env.example environment/.env` → generar `JWT_SECRET` → arrancar), **variables de entorno** (tabla), **orden de arranque** (postgres → mongo → mongo-seed → api → web), URLs, cómo crear un admin, cómo ejecutar pruebas, estructura real del repo con explicación de módulos, atribución a TMDB y licencias de datos, insignia de CI.
+- [ ] **N2 · Reproducibilidad** (🔥): decidir y aplicar la vía de arriba; comprobar con un **clon limpio en otra carpeta** (`git clone` → `docker compose up`) que arranca y que `/salud` da `ok`.
+- [ ] **N3 · Pruebas en CI con evidencia** (🔥): jobs `api-tests` (Postgres de servicio + semilla + `prueba_api.py`) y `motor-tests` (`prueba_motor.py`); `docker-build`. Que los jobs suban el log como artefacto y guardar capturas del run en verde para el PDF.
+- [ ] **N4 · Evidencias para el PDF**: capturas de (a) web de usuario (login, onboarding, top-10, ficha), (b) panel `/admin`, (c) `/docs` de la API y `/salud`, (d) `docker compose ps`, (e) CI en verde. Para que el panel no salga vacío hace falta datos de uso simulados (script pendiente de Ramón).
+- [ ] **N5 · Cierre**: merge de la PR #2 (1 aprobación), crear el tag `nf3` en `main` (`git tag -a nf3 -m "Entrega NF3"; git push origin nf3`), anotar el **commit exacto** en el PDF y comprobar que el repo es accesible para el profesor.
+- [ ] **N6 · Mi parte del PDF**: secciones 3 (guía de ejecución), 5 (arquitectura real: Docker Compose con web, API, Postgres/Neon, Mongo/Atlas, TMDB, motor + artefactos), 6 (índice de código) y 7 (reproducibilidad y CI). Cada integrante entrega **su** PDF con su nombre, y las contribuciones individuales deben quedar documentadas (commits/PRs a nombre de cada uno).
+- [ ] **N7 · Estado actual (sección 2) desde mi lado**: completo = Docker local y nube, auth, API de usuario y admin, CI mínima · parcial = pruebas en CI, endurecimiento de seguridad · pendiente NF4 = A1–A9, rate limit, tests con `pytest`, `docker-build`, pipeline de ingesta.
+
+> Lo de la Fase 2 (endurecer la API) queda **después** de N1–N5, salvo A9 (fijar versiones), que sí entra en N1/N2 por ser "fichero de dependencias".
+
+---
+
 ## Fase 0 · Preparación (30 min) 🔥
 
 - [x] Crear rama `feature/docker-compose`.
@@ -109,7 +145,6 @@ Rama: `feature/ci`.
 
 | Día | Objetivo |
 |---|---|
-| 9/11 (hoy) | Fase 0 + Fase 1.1 → 1.3 (imágenes de API y web construyen y arrancan en modo nube) |
-| 10/11 | Fase 1.4 → 1.6 (modo local con semilla) + PR de Docker + CI mínima (`lint` + `web-build`) |
-| 11/11 | Fase 2 (A1, A3, A5, A2 y pruebas de autorización) + `api-tests` en CI |
-| 12/11 | NF3: demo con `docker compose up`, README al día |
+| 10/11 (hoy) | N2 (decisión y aplicación) + N1 (README) + N3 (jobs de pruebas en CI) |
+| 11/11 | Merge de la PR, N4 (capturas), N6 (mi parte del PDF), revisión cruzada con el equipo |
+| 12/11 | N5: tag `nf3`, PDF final con commit exacto y entrega en Blackboard |

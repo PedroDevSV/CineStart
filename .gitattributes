@@ -1,5 +1,7 @@
 # La semilla de Docker se monta en contenedores Linux: siempre LF, sea cual sea el SO de quien clone
 environment/seed/** text eol=lf
+environment/seed/**/*.gz binary
+src/artefactos/** binary
 *.sh text eol=lf
 *.yml text eol=lf
 Dockerfile text eol=lf

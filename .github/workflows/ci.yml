@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ["nf*"]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -42,3 +43,69 @@ jobs:
         env:
           VITE_USE_MOCKS: "false"
           VITE_API_URL: http://localhost:8000
+
+  motor-tests:
+    name: Pruebas del motor (coherencia)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: src/api/requirements.txt
+      - run: pip install -r src/api/requirements.txt
+      - name: prueba_motor.py
+        working-directory: src/models
+        shell: bash
+        run: python prueba_motor.py ../artefactos 2>&1 | tee ../../prueba_motor.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-pruebas-motor
+          path: prueba_motor.log
+
+  api-tests:
+    name: Pruebas de la API (53 comprobaciones)
+    runs-on: ubuntu-latest
+    env:
+      PRUEBA_PG: host=127.0.0.1 port=5432 user=cinestart password=cinestart dbname=cinestart
+      JWT_SECRET: secreto-solo-para-ci-0123456789abcdef
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: src/api/requirements.txt
+      # Postgres con la misma semilla que el modo local de Docker (esquema + 4.803 películas)
+      - name: Postgres sembrado
+        run: |
+          docker run -d --name pg -p 5432:5432 \
+            -e POSTGRES_USER=cinestart -e POSTGRES_PASSWORD=cinestart -e POSTGRES_DB=cinestart \
+            -v "$PWD/environment/seed/postgres:/docker-entrypoint-initdb.d:ro" postgres:16-alpine
+          for i in $(seq 1 40); do
+            n=$(docker exec pg psql -U cinestart -d cinestart -h 127.0.0.1 -tAc 'select count(*) from movie_genre' 2>/dev/null || true)
+            [ "$n" = "12160" ] && exit 0
+            sleep 2
+          done
+          docker logs pg | tail -30
+          exit 1
+      - run: pip install -r src/api/requirements.txt mongomock
+      - name: prueba_api.py
+        working-directory: src/api
+        shell: bash
+        run: python prueba_api.py 2>&1 | tee ../../prueba_api.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-pruebas-api
+          path: prueba_api.log
+
+  docker-build:
+    name: Build de las imágenes Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f environment/api.Dockerfile -t cinestart-api .
+      - run: docker build -f environment/web.Dockerfile -t cinestart-web .
