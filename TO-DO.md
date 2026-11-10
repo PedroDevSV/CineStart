@@ -29,11 +29,34 @@ Flujo Git: una rama por bloque (`feature/docker-compose`, `feature/api-seguridad
 2. **Referenciarlos**: subirlos a una *Release* de GitHub y añadir un script `scripts/descargar_datos.ps1/.sh`; o generarlos con `features.py` desde los CSV originales de Kaggle (TMDB 5000, licencia en su página; no se redistribuyen).
 3. Mongo opcional: la API ya arranca sin Mongo (sin emails y con reparto pedido a TMDB). Documentarlo como "modo mínimo".
 
-### Plan hasta el 12/11 (por prioridad)
+## ⏸️ ESTADO AL CIERRE DE LA SESIÓN (10/11, tarde) · léeme primero al volver
 
-- [ ] **N1 · README raíz** (🔥): descripción, integrantes y roles, arquitectura real, **requisitos** (Docker Desktop, Git; Node 22 y Python 3.11 solo para desarrollo), **pasos exactos** (clonar → `cp environment/.env.example environment/.env` → generar `JWT_SECRET` → arrancar), **variables de entorno** (tabla), **orden de arranque** (postgres → mongo → mongo-seed → api → web), URLs, cómo crear un admin, cómo ejecutar pruebas, estructura real del repo con explicación de módulos, atribución a TMDB y licencias de datos, insignia de CI.
-- [ ] **N2 · Reproducibilidad** (🔥): decidir y aplicar la vía de arriba; comprobar con un **clon limpio en otra carpeta** (`git clone` → `docker compose up`) que arranca y que `/salud` da `ok`.
-- [ ] **N3 · Pruebas en CI con evidencia** (🔥): jobs `api-tests` (Postgres de servicio + semilla + `prueba_api.py`) y `motor-tests` (`prueba_motor.py`); `docker-build`. Que los jobs suban el log como artefacto y guardar capturas del run en verde para el PDF.
+**Hecho y subido (rama `feature/docker-compose`, PR #2, último commit `96b3557`):** Docker nube y local · CI con 5 jobs (lint, build web, pruebas motor, pruebas API, build Docker) · artefactos y volcado de Mongo versionados · README raíz nuevo · `docs/DATOS.md`.
+**Verificado en local:** `prueba_api.py` → `TODO BIEN` (53 comprobaciones, con la base recién sembrada) · `prueba_motor.py` OK · **clon limpio desde GitHub** + los pasos del README → `postgres ok`, `mongodb ok`, 4.803 películas, web 200.
+
+**PENDIENTE (por orden):**
+1. **Mirar la CI de la PR #2** (https://github.com/PedroDevSV/CineStart/pull/2): los 3 jobs nuevos (`Pruebas del motor`, `Pruebas de la API`, `Build de las imágenes Docker`) **no se han visto en verde en GitHub**. Si falla `api-tests`, mirar el paso «Postgres sembrado» (espera 12.160 filas en `movie_genre`) y el log descargable. Posible causa: `tee` y códigos de salida, o el `pip install` de `requirements.txt`.
+2. **El repo es PRIVADO** (la API de GitHub devuelve 404 sin autenticar). El profesor tiene que poder abrirlo: hacerlo público o **invitarle como colaborador** (Settings → Collaborators). Confirmar el método con el aula virtual.
+3. **Revisión + merge de la PR #2** (necesita 1 aprobación de otro miembro: Ramón o Roberto). Después, activar *Branch protection* en `main`.
+4. **Crear el tag `nf3`** en `main` tras el merge: `git tag -a nf3 -m "Entrega NF3"; git push origin nf3`. Anotar el commit exacto en el PDF. (El README ya dice `git checkout nf3`.)
+5. **Capturas para el PDF (N4):** web de usuario (login, onboarding, top-10, ficha), `/admin`, `/docs` y `/salud`, `docker compose ps`, CI en verde. Con el modo local: `docker compose -f environment/docker-compose.yml -f environment/docker-compose.local.yml up -d`. **Ojo:** hice `down -v`, así que el usuario `pedro` ya no existe: hay que registrarse y volver a hacerse admin (comando en el README).
+6. **Datos de uso para que el panel no salga vacío:** pedir a Ramón el script de datos simulados; si no llega, hacer unas valoraciones a mano con 2–3 usuarios antes de las capturas.
+7. **Mi PDF (N6):** secciones 3, 5, 6 y 7 (guía de ejecución, arquitectura real con diagrama, índice de código, reproducibilidad y CI). Fichero: `NF3_Producto_Funcional_Local_y_Repositorio_NombreAlumno_Apellido1_Apellido2.pdf`, entrega en Blackboard **antes del 12/11**.
+8. **Coordinar con el equipo:** cada uno entrega su PDF; las contribuciones individuales deben verse en commits/PRs a nombre de cada uno.
+9. **Después de la entrega (NF4):** A1–A9 (límite de contraseña de 72 bytes, rate limit, `/salud` real, versiones con `==`), migrar `prueba_api.py` a `pytest`, activar la regla `I` de ruff.
+
+**Notas a tener presentes**
+- `environment/.env` (ignorado por git) tiene las claves reales de Neon, Atlas (`cinestart_api`) y TMDB. **Rotar esas claves** (se pegaron en el chat) cuando acabe la entrega.
+- Docker Desktop hay que arrancarlo a mano si está parado.
+- `prueba_api.py` solo pasa con la base recién sembrada: si falla en local por 2 comprobaciones (aceptación y sinopsis de «Matrix»), es por datos de pruebas previas; `docker compose ... down -v` y repetir.
+
+---
+
+### Plan hasta el 12/11 (por prioridad) · estado
+
+- [x] **N1 · README raíz** (hecho, subido) (🔥): descripción, integrantes y roles, arquitectura real, **requisitos** (Docker Desktop, Git; Node 22 y Python 3.11 solo para desarrollo), **pasos exactos** (clonar → `cp environment/.env.example environment/.env` → generar `JWT_SECRET` → arrancar), **variables de entorno** (tabla), **orden de arranque** (postgres → mongo → mongo-seed → api → web), URLs, cómo crear un admin, cómo ejecutar pruebas, estructura real del repo con explicación de módulos, atribución a TMDB y licencias de datos, insignia de CI.
+- [x] **N2 · Reproducibilidad** (hecho: artefactos y Mongo versionados; clon limpio verificado) (🔥): decidir y aplicar la vía de arriba; comprobar con un **clon limpio en otra carpeta** (`git clone` → `docker compose up`) que arranca y que `/salud` da `ok`.
+- [~] **N3 · Pruebas en CI con evidencia** (subido; falta ver los jobs en verde en GitHub) (🔥): jobs `api-tests` (Postgres de servicio + semilla + `prueba_api.py`) y `motor-tests` (`prueba_motor.py`); `docker-build`. Que los jobs suban el log como artefacto y guardar capturas del run en verde para el PDF.
 - [ ] **N4 · Evidencias para el PDF**: capturas de (a) web de usuario (login, onboarding, top-10, ficha), (b) panel `/admin`, (c) `/docs` de la API y `/salud`, (d) `docker compose ps`, (e) CI en verde. Para que el panel no salga vacío hace falta datos de uso simulados (script pendiente de Ramón).
 - [ ] **N5 · Cierre**: merge de la PR #2 (1 aprobación), crear el tag `nf3` en `main` (`git tag -a nf3 -m "Entrega NF3"; git push origin nf3`), anotar el **commit exacto** en el PDF y comprobar que el repo es accesible para el profesor.
 - [ ] **N6 · Mi parte del PDF**: secciones 3 (guía de ejecución), 5 (arquitectura real: Docker Compose con web, API, Postgres/Neon, Mongo/Atlas, TMDB, motor + artefactos), 6 (índice de código) y 7 (reproducibilidad y CI). Cada integrante entrega **su** PDF con su nombre, y las contribuciones individuales deben quedar documentadas (commits/PRs a nombre de cada uno).
