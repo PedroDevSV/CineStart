@@ -79,7 +79,7 @@ Rama: `feature/api-seguridad`. Una PR pequeña por punto o agrupadas (A# = spec 
 Rama: `feature/ci`.
 
 - [x] `ruff.toml` en la raíz (`line-length = 150`, reglas `E,F`; ignora `E741`). `ruff check src` pasa. Pendiente a futuro: activar `I` (orden de imports) sin romper el `sys.path.insert` de `catalogo.py` y `prueba_api.py`.
-- [x] 🔥 `.github/workflows/ci.yml` mínimo: `lint` + `web-build` (`npm ci && npm run build`). Ambos pasos probados en local (ruff OK, build OK). Falta ver el workflow en verde en GitHub tras la PR.
+- [x] 🔥 `.github/workflows/ci.yml` mínimo: `lint` + `web-build` (`npm ci && npm run build`). **En verde en GitHub** (PR #2).
 - [ ] Job `api-tests`: servicio `postgres:16`, aplicar esquema + semilla, generar artefactos, ejecutar `python src/api/prueba_api.py` con `PRUEBA_PG` y `JWT_SECRET` de prueba.
 - [ ] Comprobar si `features.py --movies tmdb_5000_movies.csv --out src/artefactos` genera artefactos válidos solo con el CSV de la raíz (si no, plan B del spec §5.1).
 - [ ] Job `motor-tests`: `ARTEFACTOS=src/artefactos pytest src/models/prueba_motor.py`.
