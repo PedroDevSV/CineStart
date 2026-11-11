@@ -17,12 +17,12 @@ Flujo Git: una rama por bloque (`feature/docker-compose`, `feature/api-seguridad
 
 | Requisito | Estado | Qué falta |
 |---|---|---|
-| Enlace al repo y **tag o commit exacto** de entrega | ❌ | Mergear la PR #2 y crear el tag `nf3` (ver bloque N5) |
-| README con requisitos, configuración y comandos | ❌ | README raíz desfasado (describe carpetas y Alembic que no existen). Reescribir (N1) |
-| Fichero de dependencias/lockfile y `.env` de ejemplo sin secretos | ⚠️ | Hay `requirements.txt` (parcialmente fijado), `package-lock.json` y `environment/.env.example`. Fijar versiones con `==` (A9) |
-| **Pruebas automatizadas y evidencias de su resultado** | ⚠️ | La CI solo hace lint + build. Añadir `api-tests` y `motor-tests` (N3) y guardar capturas del resultado |
-| Estructura real del repo y explicación de módulos | ⚠️ | Escribirla en el README (N1) |
-| Datos y artefactos versionados o **referenciados** según licencia y privacidad | ❌ | Un clon limpio **no puede arrancar**: faltan los artefactos, el CSV limpio y el volcado de Mongo (N2) |
+| Enlace al repo y **tag o commit exacto** de entrega | ⏳ | Mergear la PR #2 y crear el tag `nf3` (N5). Repo **privado**: dar acceso al profesor |
+| README con requisitos, configuración y comandos | ✅ | Hecho (N1) |
+| Fichero de dependencias/lockfile y `.env` de ejemplo sin secretos | ✅ | `requirements.txt` (scikit-learn fijado; el resto con `>=`, A9 en NF4), `package-lock.json` y `environment/.env.example` |
+| **Pruebas automatizadas y evidencias de su resultado** | ✅ | CI con 5 jobs **en verde** en la PR #2; los logs de motor y API se suben como artefactos. Falta la captura para el PDF |
+| Estructura real del repo y explicación de módulos | ✅ | En el README (N1) |
+| Datos y artefactos versionados o **referenciados** según licencia y privacidad | ✅ | Versionados: `src/artefactos/` y `environment/seed/` (N2). Clon limpio verificado |
 
 **Bloqueo detectado (N2): reproducibilidad desde un clon limpio.** `src/artefactos/` está ignorado por git; `features.py` necesita `tmdb_5000_clean.csv` (no está) o los dos CSV originales de Kaggle (en el repo solo está `tmdb_5000_movies.csv`, sin `credits`); y el Mongo local necesita `movie_details.json` (borrado de `docs/`). Hay que **decidir con el equipo** una de estas vías:
 1. **Versionar los artefactos** (~25 MB; `model.joblib` pesa 20 MB, bajo el límite de 100 MB de GitHub) y una muestra/volcado comprimido de Mongo. Más simple y reproducible al instante.
@@ -35,7 +35,7 @@ Flujo Git: una rama por bloque (`feature/docker-compose`, `feature/api-seguridad
 **Verificado en local:** `prueba_api.py` → `TODO BIEN` (53 comprobaciones, con la base recién sembrada) · `prueba_motor.py` OK · **clon limpio desde GitHub** + los pasos del README → `postgres ok`, `mongodb ok`, 4.803 películas, web 200.
 
 **PENDIENTE (por orden):**
-1. **Mirar la CI de la PR #2** (https://github.com/PedroDevSV/CineStart/pull/2): los 3 jobs nuevos (`Pruebas del motor`, `Pruebas de la API`, `Build de las imágenes Docker`) **no se han visto en verde en GitHub**. Si falla `api-tests`, mirar el paso «Postgres sembrado» (espera 12.160 filas en `movie_genre`) y el log descargable. Posible causa: `tee` y códigos de salida, o el `pip install` de `requirements.txt`.
+1. ✅ **CI de la PR #2 en verde (11/11):** los 5 checks (lint, build web, pruebas motor, pruebas API, build Docker). Falta solo la **captura** para el PDF (pestaña Checks de la PR).
 2. **El repo es PRIVADO** (la API de GitHub devuelve 404 sin autenticar). El profesor tiene que poder abrirlo: hacerlo público o **invitarle como colaborador** (Settings → Collaborators). Confirmar el método con el aula virtual.
 3. **Revisión + merge de la PR #2** (necesita 1 aprobación de otro miembro: Ramón o Roberto). Después, activar *Branch protection* en `main`.
 4. **Crear el tag `nf3`** en `main` tras el merge: `git tag -a nf3 -m "Entrega NF3"; git push origin nf3`. Anotar el commit exacto en el PDF. (El README ya dice `git checkout nf3`.)
@@ -56,7 +56,7 @@ Flujo Git: una rama por bloque (`feature/docker-compose`, `feature/api-seguridad
 
 - [x] **N1 · README raíz** (hecho, subido) (🔥): descripción, integrantes y roles, arquitectura real, **requisitos** (Docker Desktop, Git; Node 22 y Python 3.11 solo para desarrollo), **pasos exactos** (clonar → `cp environment/.env.example environment/.env` → generar `JWT_SECRET` → arrancar), **variables de entorno** (tabla), **orden de arranque** (postgres → mongo → mongo-seed → api → web), URLs, cómo crear un admin, cómo ejecutar pruebas, estructura real del repo con explicación de módulos, atribución a TMDB y licencias de datos, insignia de CI.
 - [x] **N2 · Reproducibilidad** (hecho: artefactos y Mongo versionados; clon limpio verificado) (🔥): decidir y aplicar la vía de arriba; comprobar con un **clon limpio en otra carpeta** (`git clone` → `docker compose up`) que arranca y que `/salud` da `ok`.
-- [~] **N3 · Pruebas en CI con evidencia** (subido; falta ver los jobs en verde en GitHub) (🔥): jobs `api-tests` (Postgres de servicio + semilla + `prueba_api.py`) y `motor-tests` (`prueba_motor.py`); `docker-build`. Que los jobs suban el log como artefacto y guardar capturas del run en verde para el PDF.
+- [x] **N3 · Pruebas en CI con evidencia** (hecho: 5 jobs en verde en GitHub, logs como artefacto) (🔥): jobs `api-tests` (Postgres de servicio + semilla + `prueba_api.py`) y `motor-tests` (`prueba_motor.py`); `docker-build`. Que los jobs suban el log como artefacto y guardar capturas del run en verde para el PDF.
 - [ ] **N4 · Evidencias para el PDF**: capturas de (a) web de usuario (login, onboarding, top-10, ficha), (b) panel `/admin`, (c) `/docs` de la API y `/salud`, (d) `docker compose ps`, (e) CI en verde. Para que el panel no salga vacío hace falta datos de uso simulados (script pendiente de Ramón).
 - [ ] **N5 · Cierre**: merge de la PR #2 (1 aprobación), crear el tag `nf3` en `main` (`git tag -a nf3 -m "Entrega NF3"; git push origin nf3`), anotar el **commit exacto** en el PDF y comprobar que el repo es accesible para el profesor.
 - [ ] **N6 · Mi parte del PDF**: secciones 3 (guía de ejecución), 5 (arquitectura real: Docker Compose con web, API, Postgres/Neon, Mongo/Atlas, TMDB, motor + artefactos), 6 (índice de código) y 7 (reproducibilidad y CI). Cada integrante entrega **su** PDF con su nombre, y las contribuciones individuales deben quedar documentadas (commits/PRs a nombre de cada uno).
