@@ -14,9 +14,6 @@ __pycache__/
 node_modules/
 dist/
 
-# Datos que pesan demasiado o se regeneran
-docs/Mongo/
-
 # SO / IDE
 .DS_Store
 Thumbs.db

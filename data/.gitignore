@@ -1,2 +1,4 @@
 *.csv
 !.gitignore
+# CSV original de Kaggle (TMDB 5000): entrada de scripts/ y de src/web/scripts/build_mock_data.py
+!tmdb_5000_movies.csv

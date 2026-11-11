@@ -1,5 +1,5 @@
 # Override para el modo LOCAL: se usa junto a docker-compose.yml (ver su cabecera).
-# Datos de Mongo: por defecto docs/Mongo/movie_details.json (no se versiona); cambia la ruta con MONGO_SEED_DIR.
+# Mongo se siembra desde seed/mongo/movie_details.json.gz; Postgres, desde seed/postgres/.
 services:
   api:
     environment:

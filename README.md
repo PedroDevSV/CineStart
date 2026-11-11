@@ -147,13 +147,16 @@ CineStart/
 │   ├── models/                  Motor: features.py (genera artefactos), motor.py, prueba_motor.py
 │   ├── artefactos/              embeddings.npy, model.joblib, *.parquet (salida de features.py)
 │   └── web/                     React + Vite: usuario y /admin (ver src/web/README.md)
-├── docs/                        Documentación de Fase 1 y resumen de los datos (DATOS.md)
-├── tmdb_5000_movies.csv         CSV original del TMDB 5000 (Kaggle), entrada del análisis
-├── analisis_kmeans.py · pruebas_merged.py     scripts de análisis y limpieza (Ramón / Roberto)
-├── SPEC_PLATAFORMA.md · TO-DO.md              especificación y plan de la parte de Plataforma
+├── scripts/                     análisis y limpieza previos (analisis_kmeans.py, pruebas_merged.py; Ramón / Roberto)
+├── data/                        tmdb_5000_movies.csv: CSV original del TMDB 5000 (Kaggle); el resto de CSV se ignora
+├── docs/                        Documentación de Fase 1 (presentación de diseño) y muestras CSV de Neon
+├── SPEC.md                      especificación técnica detallada (arquitectura, datos, API, Docker, CI)
+├── TO-DO.md                     plan y pendientes de la parte de Plataforma
 ├── ruff.toml · .gitignore · .dockerignore · .gitattributes
 └── README.md
 ```
+
+> **Documentación:** este README (cómo arrancar), [SPEC.md](./SPEC.md) (detalle técnico) y [TO-DO.md](./TO-DO.md) (pendientes), más el README de cada módulo ([api](./src/api/README.md), [web](./src/web/README.md), [models](./src/models/README.md)).
 
 ---
 
@@ -161,13 +164,17 @@ CineStart/
 
 | Dato | Origen | Dónde está | Licencia / privacidad |
 |---|---|---|---|
-| Catálogo (4.803 películas) | [TMDB 5000 Movie Dataset](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata) (Kaggle), limpiado | `environment/seed/postgres/*.csv` y `tmdb_5000_movies.csv` | Uso **no comercial con atribución a TMDB** |
+| Catálogo (4.803 películas) | [TMDB 5000 Movie Dataset](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata) (Kaggle), limpiado | `environment/seed/postgres/*.csv` y `data/tmdb_5000_movies.csv` | Uso **no comercial con atribución a TMDB** |
 | Detalle de películas (reparto, equipo…) | Mismo dataset | `environment/seed/mongo/movie_details.json.gz` (8 MB) | Ídem |
 | Artefactos del motor | Generados con `src/models/features.py` | `src/artefactos/` (25 MB) | Derivados del dataset; no contienen datos personales |
 | Pósters y sinopsis en castellano | API de TMDB, bajo demanda | Se guardan en la base de datos; las imágenes se sirven desde el CDN de TMDB | Atribución obligatoria (ver abajo) |
 | Usuarios y valoraciones | Cuentas de prueba del equipo | Solo en las bases de datos | Sin datos de personas reales. En PostgreSQL solo alias y hash; el email va aparte, en Mongo |
 
-`docs/DATOS.md` resume el contenido de las tablas y colecciones.
+El detalle de las tablas y colecciones está en [SPEC.md](./SPEC.md#4-modelo-de-datos).
+
+### Desarrollo sin Docker (opcional)
+
+API: `src/api/README.md` (necesita Python 3.11, un `src/api/.env` y Postgres/Mongo accesibles). Web: `cd src/web && npm install && npm run dev` (`VITE_USE_MOCKS=true` en `src/web/.env` la hace funcionar sola, con datos de ejemplo). Regenerar los artefactos del motor: `src/models/README.md`.
 
 ---
 
