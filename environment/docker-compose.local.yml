@@ -1,0 +1,67 @@
+# Override para el modo LOCAL: se usa junto a docker-compose.yml (ver su cabecera).
+# Mongo se siembra desde seed/mongo/movie_details.json.gz; Postgres, desde seed/postgres/.
+services:
+  api:
+    environment:
+      DATABASE_URL: postgresql://cinestart:cinestart@postgres:5432/cinestart
+      MONGO_URI: mongodb://mongo:27017
+      # Las PG* de Neon (sslmode=require) no valen para el Postgres local
+      PGSSLMODE: disable
+      PGCHANNELBINDING: prefer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      mongo-seed:
+        condition: service_completed_successfully
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cinestart
+      POSTGRES_PASSWORD: cinestart
+      POSTGRES_DB: cinestart
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./seed/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinestart -d cinestart"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mongo-seed:
+    image: mongo:7
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./seed/mongo:/seed:ro
+    # Importa el volcado comprimido (array JSON, _id = id de TMDB) solo si la colección está vacía
+    entrypoint:
+      - sh
+      - -c
+      - |
+        N=$$(mongosh --quiet --host mongo --eval "db.getSiblingDB('cinestart').movie_details.estimatedDocumentCount()")
+        if [ "$$N" -gt 0 ]; then echo "movie_details ya tiene $$N documentos"; exit 0; fi
+        gunzip -c /seed/movie_details.json.gz | mongoimport --host mongo --db cinestart --collection movie_details --jsonArray
+    restart: "no"
+
+volumes:
+  pgdata:
+  mongodata:

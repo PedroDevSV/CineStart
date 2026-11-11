@@ -1,0 +1,9 @@
+# Lint de la CI (python -m ruff check src). Empezamos con errores reales (E, F);
+# el orden de imports (I) se activará cuando se pueda reordenar sin tocar el sys.path.insert de api/catalogo.py y prueba_api.py.
+line-length = 150
+target-version = "py311"
+extend-exclude = ["src/web", "src/artefactos"]
+
+[lint]
+select = ["E", "F"]
+ignore = ["E741"]   # `l` en features.py (código de Roberto, sin riesgo)

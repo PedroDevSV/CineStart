@@ -1,0 +1,840 @@
+Módulo C088 · Proyecto de Inteligencia Artificial y Big Data
+Documentación y diseño técnico
+Fase 1
+Nombre del proyecto
+CineStart  ·  Recomendador híbrido de películas
+Grupo
+Grupo 2
+Curso de especialización en Inteligencia Artificial y Big Data · Modalidad online · 2026–2027
+1
+
+1
+Título del proyecto e integrantes
+CineStart · Fase 1 · Documentación y diseño técnico
+Nombre del proyecto
+CineStart  —  Recomendador híbrido de películas para usuarios nuevos. Uso de Claude Code en el diseño y redacción
+Integrantes y rol principal
+Integrante
+Rol principal
+Responsabilidades
+Ramón Moncholí
+Data / BI
+Ingesta, limpieza, EDA, cliente de la API de TMDB, modelo de datos SQL / NoSQL
+Roberto Raya
+ML / BI
+Features, clustering, motor de recomendación, reglas y validación
+Pedro Sandoval
+Platform / BI
+API FastAPI, autenticación, Docker, CI y repositorio
+Todos
+Frontend
+Web React (usuario y administración), KPIs y documentación
+2
+2
+
+2
+Resumen ejecutivo
+Máximo 200 palabras
+CineStart · Fase 1 · Documentación y diseño técnico
+Qué problema se resuelve
+Al registrarse, la plataforma no conoce los gustos del usuario y le muestra los mismos éxitos que a todos. No encuentra nada interesante en sus primeras sesiones y el cine menos conocido del catálogo queda invisible.
+Qué solución se propone
+Una web en la que el usuario, con un alias, valora al menos 3 películas y recibe al instante 10 recomendaciones. El motor combina similitud de contenido (géneros, temas, director, reparto, sinopsis) con popularidad ponderada y reglas de diversidad. Un panel de administración mide cobertura, diversidad y aceptación.
+Qué valor aporta
+Una primera experiencia personal y transparente, que genera confianza desde el primer minuto, y más visibilidad para todo el catálogo, no solo para los títulos más populares.
+3
+3
+
+3
+Descripción funcional del sistema
+CineStart · Fase 1 · Documentación y diseño técnico
+Qué hace exactamente la aplicación
+Registro e inicio de sesión con alias y contraseña
+Onboarding: géneros favoritos y valoración de películas variadas
+Top-10 personalizado, con póster
+Recalcula al valorar o marcar «No me interesa»
+Panel de administración: KPIs, catálogo y usuarios
+Flujo general de uso
+Registro / inicio de sesión con alias
+Elegir géneros favoritos (opcional)
+Valorar al menos 3 películas (1–5 ★)
+Recibir el top-10 de recomendaciones
+Valorar o descartar → la lista se actualiza (vuelve a 4)
+Casos principales de usuario
+Usuario: registrarse, completar el onboarding, ver sus recomendaciones
+Usuario: valorar / descartar, gestionar sus valoraciones y borrar su cuenta
+Administrador: consultar KPIs, revisar el catálogo, gestionar usuarios y ver el uso
+Qué puede y qué no puede hacer el sistema
+Puede: recomendar desde 3 valoraciones, mostrar póster y sinopsis en castellano, ampliar el catálogo con lo que se busca
+No puede: reproducir películas ni series, aprender de otros usuarios (sin colaborativo), recuperar contraseñas
+4
+4
+
+3
+Qué puede y qué no puede hacer
+CineStart · Fase 1 · Documentación y diseño técnico
+Descripción funcional (continuación) · el sistema, el usuario, las películas y el administrador
+Puede
+No puede
+El sistema
+la aplicación en conjunto
+Recomendar desde la primera sesión, con 3 valoraciones
+Recalcular la lista tras cada valoración o descarte
+Variar los géneros y dar visibilidad al cine poco conocido
+Completar datos y ampliar el catálogo con TMDB al buscar
+Aprender de otros usuarios (no hay filtrado colaborativo)
+Usarse en producción ni con usuarios reales (prototipo)
+Enviar correos ni notificaciones a los usuarios
+Gestionar pagos ni ofrecer una app móvil
+El usuario
+persona registrada
+Registrarse con alias, email y contraseña
+Elegir géneros y valorar películas para recibir su top-10
+Buscar películas, también las que no están en el catálogo
+Valorar (1–5 ★) o descartar lo que se le recomienda
+Editar o borrar sus valoraciones y borrar su cuenta
+Ver recomendaciones sin haber valorado antes 3 películas
+Recuperar la contraseña si la olvida (fuera del alcance)
+Ver los datos ni las valoraciones de otros usuarios
+Entrar en el panel de administración
+Las películas
+el catálogo
+Aparecer en el onboarding, las recomendaciones y el buscador
+Mostrar ficha con póster, sinopsis en castellano y reparto
+Recibir valoraciones (1–5 ★) y descartes de los usuarios
+Entrar desde TMDB al buscarlas y recomendarse después
+Reproducirse ni enlazar a dónde verlas
+Ser series: solo se trabaja con películas
+Editarse ni borrarse a mano: vienen del dataset y de TMDB
+Recomendarse si el usuario ya las valoró o descartó
+El administrador
+responsable de catálogo
+Ver los KPIs: cobertura, diversidad, novedad y aceptación
+Buscar películas y ver cuáles no se recomiendan nunca
+Ver los usuarios y desactivar, reactivar o borrar cuentas
+Ver el uso: registros, onboardings y valoraciones por día
+Ver contraseñas ni su hash
+Modificar las valoraciones de los usuarios
+Añadir, editar, ocultar ni borrar películas
+Vetar películas ni géneros: el catálogo no se filtra a mano
+5
+5
+
+4
+Alcance definitivo (IN / OUT)
+CineStart · Fase 1 · Documentación y diseño técnico
+IN · Incluye
+OUT · No incluye
+Funcionalidades mínimas obligatorias
+Ingesta y limpieza de TMDB 5000 → PostgreSQL + MongoDB
+API de TMDB solo para lo que falta: pósters, reparto, sinopsis en castellano
+Login con alias + contraseña; roles usuario / admin
+Onboarding con géneros y selección por clusters
+Motor híbrido: contenido + popularidad + reglas
+Buscador: catálogo propio y, si no está, consulta a TMDB
+Valorar (1–5 ★) y «No me interesa», con recálculo
+Gestión de valoraciones y borrado de cuenta
+Panel admin: KPIs, catálogo, usuarios y uso
+API FastAPI, web React, Docker Compose y CI
+Funcionalidades opcionales
+Ajustar el motor desde el panel
+Estado de los datos y relanzar features
+Exportar KPIs a CSV
+Colaborativo con valoraciones de la app
+MLflow
+«Películas similares» en la ficha
+Descartado explícitamente
+MovieLens y valoraciones externas
+Usuarios reales, producción y A/B
+Recuperar contraseña; datos personales más allá del email
+Vídeo, pagos, series y app móvil
+Carga masiva de estrenos (entran al buscarlos)
+Tiempo real, Spark y redes neuronales
+Almacenar imágenes (se usa el CDN de TMDB)
+6
+6
+
+5
+Arquitectura del sistema (alto nivel)
+Pipelines por lotes (offline) + API con el motor en línea (online), todo orquestado con Docker Compose
+CineStart · Fase 1 · Documentación y diseño técnico
+Docker Compose
+FUENTES
+DATOS
+ALMACENAMIENTO
+SERVICIO
+PRESENTACIÓN
+TMDB 5000
+CSV de Kaggle
+API de TMDB
+lo que falta · búsquedas
+Ingesta y limpieza
+Python · por lotes
+Pipeline de features
+TF-IDF · SVD · KMeans
+PostgreSQL
+relacional
+MongoDB
+documental
+Parquet
+features · vecinos
+API FastAPI
+auth JWT · motor híbrido · reglas · buscador · admin
+Panel /admin
+KPIs · catálogo · usuarios
+Web de usuario
+React · onboarding · top-10
+CDN imágenes TMDB
+REST/JSON + JWT
+SQLAlchemy · pymongo
+HTTPS · por lotes
+Flujo de datos por lotes (offline)
+Peticiones en línea (online)
+Servicio externo
+Almacén de datos
+HTTPS · lo que falta y búsquedas
+7
+7
+
+5
+Arquitectura: componentes
+CineStart · Fase 1 · Documentación y diseño técnico
+Componente
+Capa
+Descripción
+Se comunica con (cómo)
+Frontend
+Presentación
+SPA React (Vite) con la web de usuario y el panel /admin
+API por REST/JSON con JWT · CDN de TMDB (pósters)
+Backend
+Servicio
+FastAPI: auth bcrypt + JWT, roles, endpoints de usuario y admin, validación Pydantic, OpenAPI
+PostgreSQL, MongoDB, Parquet · API de TMDB (HTTPS) para búsquedas y datos que faltan
+Base de datos
+Almacenamiento
+PostgreSQL: datos relacionales · MongoDB: detalle anidado de cada película · Parquet: features y vecinos
+Escriben los pipelines; lee y escribe la API
+Servicios ML
+Modelo
+Offline: TF-IDF, SVD, KMeans, top-50 vecinos, nota ponderada · Online: perfil, score híbrido, reglas, parecidos de las películas nuevas
+Lee las BD y escribe Parquet; el motor online vive en la API
+Pipeline de datos
+Datos
+Scripts Python por lotes: CSV → validación → limpieza → JSON desanidado → API TMDB con caché → carga
+CSV, API de TMDB (HTTPS), PostgreSQL, MongoDB
+Dashboards
+Presentación
+Panel /admin en React + Recharts: KPIs, catálogo, usuarios y uso
+API /admin/* (solo rol admin)
+Otros servicios
+Infraestructura
+Docker Compose (postgres, mongo, api, web, pipeline) · GitHub Actions · secretos en .env
+Todos los contenedores
+8
+8
+
+6
+Tecnologías seleccionadas
+Listado con justificación breve
+CineStart · Fase 1 · Documentación y diseño técnico
+Categoría
+Tecnología
+Por qué se ha elegido
+Alternativa descartada
+Lenguajes
+Python 3.11 · JavaScript (JSX) · SQL
+Python es el estándar en datos y ML y el equipo lo domina; JS para la web; SQL para las consultas
+Java / Spring (más código para lo mismo)
+Frameworks
+FastAPI · React + Vite
+Validación con Pydantic y OpenAPI automática; componentes reutilizables entre usuario y admin; vistos en clase
+Django, Flask · Streamlit para el panel (otro despliegue)
+Librerías principales
+pandas · scikit-learn · SQLAlchemy · pymongo · httpx · PyJWT + bcrypt · Recharts
+Cubren datos, motor (TF-IDF, SVD, KMeans, coseno), acceso a BD, API de TMDB, seguridad y gráficas sin GPU
+Surprise (colaborativo: sin valoraciones no aplica)
+Tipo de base de datos
+PostgreSQL 16 + MongoDB 7 + Parquet
+Cada dato en su almacén: relaciones con integridad, documentos anidados y matrices de lectura rápida
+Solo PostgreSQL con JSONB (no practica NoSQL)
+Herramientas auxiliares
+Docker Compose · GitHub Projects / Actions · pytest · ruff · MLflow (opcional)
+Reproducible con un comando, integración continua con tests y tablero de tareas
+Airflow (desproporcionado para cargas puntuales)
+9
+9
+
+7
+Modelo de datos
+Diagrama entidad-relación · borde continuo = PostgreSQL · borde discontinuo = MongoDB · 1 — N = cardinalidad
+CineStart · Fase 1 · Documentación y diseño técnico
+users
+PK id
+UK alias
+password_hash
+role (user | admin)
+active
+created_at
+ratings
+PK FK user_id
+PK FK movie_id
+rating (1–5)
+source
+created_at
+dismissals
+PK FK user_id
+PK FK movie_id
+created_at
+recommendations
+PK id
+FK user_id
+FK movie_id
+batch_id · position · score
+generated_at
+
+movies
+PK id (TMDB id)
+title
+overview · overview_es
+release_date · runtime_min
+vote_average · vote_count
+popularity · weighted_rating
+director · poster_path
+cluster_id · long_tail
+
+movie_details (Mongo)
+_id = movies.id
+cast [ ]
+crew [ ]
+keywords [ ]
+companies · countries [ ]
+tmdb_api { }
+movie_genre
+PK FK movie_id
+PK FK genre_id
+genres
+PK id
+UK name
+user_genre
+PK FK user_id
+PK FK genre_id
+1
+N
+N
+N
+N
+N
+N
+1
+1
+1
+1
+N
+N
+1
+1
+N
+1
+N
+10
+Peliculas dentro de postgre es la parte relacional entre película y usuario
+
+en mongo es la propia película en sí para hacer todas las búsquedas
+10
+
+7
+Modelo de datos: tablas / colecciones
+CineStart · Fase 1 · Documentación y diseño técnico
+Tabla / colección
+Explicación
+Campos principales
+Claves
+Relaciones
+users (PG)
+Cuentas de la app
+alias, password_hash, role, active, created_at
+PK id · UK alias
+1:N ratings, dismissals, recommendations
+movies (PG)
+Catálogo limpio + API + features
+title, overview(_es), release_date, vote_average, vote_count, weighted_rating, director, poster_path, cluster_id, long_tail
+PK id (TMDB)
+N:M genres · 1:1 movie_details
+genres (PG)
+Los 20 géneros de TMDB
+name
+PK id · UK name
+N:M movies y users
+movie_genre (PG)
+Puente película–género
+movie_id, genre_id
+PK compuesta · 2 FK
+—
+user_genre (PG)
+Géneros favoritos del onboarding
+user_id, genre_id
+PK compuesta · 2 FK
+—
+ratings (PG)
+Puntuación 1–5 de un usuario
+rating, source, created_at
+PK (user_id, movie_id) · CHECK
+N:1 user y movie
+dismissals (PG)
+«No me interesa»
+created_at
+PK (user_id, movie_id)
+N:1 user y movie
+recommendations (PG)
+Top-10 servidos: base de los KPIs
+batch_id, position, score, generated_at
+PK id · 2 FK
+N:1 user y movie
+movie_details (Mongo)
+Detalle anidado tal como viene del JSON
+cast, crew, keywords, production_companies, tmdb_api
+_id = id TMDB
+1:1 movies
+11
+11
+
+7
+Modelo de datos: valores y ejemplos
+CineStart · Fase 1 · Documentación y diseño técnico
+Opciones que admite cada campo cerrado y una fila de ejemplo por tabla, con datos reales del dataset
+Valores permitidos
+Campo
+Opciones
+users.role
+user · admin
+users.active
+true · false
+ratings.rating
+1 · 2 · 3 · 4 · 5
+ratings.source
+onboarding · recommendation
+movies.long_tail
+true · false
+movies.cluster_id
+0 … k−1 (k ≈ 10–12 grupos de K-means)
+genres.name (20)
+Action · Adventure · Animation · Comedy · Crime · Documentary · Drama · Family · Fantasy · Foreign · History · Horror · Music · Mystery · Romance · Science Fiction · TV Movie · Thriller · War · Western
+Ejemplo de filas
+users
+id
+alias
+role
+active
+created_at
+1
+ramon
+user
+true
+2026-11-02 18:30
+ratings
+user_id
+movie_id
+rating
+source
+created_at
+1
+27205
+5
+onboarding
+2026-11-02 18:32
+movies (algunos campos)
+id
+title
+release_date
+vote_average
+vote_count
+long_tail
+27205
+Inception
+2010-07-14
+8.1
+13752
+false
+genres
+id
+name
+28
+Action
+878
+Science Fiction
+movie_genre
+movie_id
+genre_id
+27205
+28
+27205
+878
+12
+
+7
+Modelo de datos: diccionario de variables
+TMDB 5000 (movies + credits) · diccionario completo de las 24 columnas en docs/especificacion.md
+CineStart · Fase 1 · Documentación y diseño técnico
+Variable
+Tipo
+Descripción
+Valores / rango
+Uso
+id / movie_id
+int
+Identificador de TMDB
+Único · cruce 100 %
+Clave del sistema
+title
+texto
+Título (inglés)
+3 duplicados
+Mostrar
+overview
+texto
+Sinopsis (inglés)
+3 nulos · 1 vacía
+TF-IDF
+genres
+JSON
+Géneros {id, name}
+20 géneros · 28 vacíos
+Sopa, reglas, onboarding
+keywords
+JSON
+Palabras clave
+412 vacías
+Sopa
+release_date
+fecha
+Fecha de estreno
+1916 – 02/2017
+Mostrar, año
+runtime
+float
+Duración (min)
+2 nulos · 35 a 0
+Mostrar
+vote_average
+float
+Nota media TMDB
+0–10 · mediana 6,2
+Nota ponderada
+vote_count
+int
+Número de votos
+0–13.752 · mediana 235
+Nota ponderada, cola larga
+popularity · status
+float · texto
+Popularidad · estado
+0–876 · 8 no estrenadas
+KPIs · filtro
+cast (credits)
+JSON
+Reparto {name, character, order}
+43 vacíos
+Top-3 en la sopa · Mongo
+crew (credits)
+JSON
+Equipo {name, job, department}
+30 sin director · 308 con varios
+Director · Mongo
+budget · revenue · homepage · tagline
+varios
+Presupuesto, recaudación, web, eslogan
+Ceros (22–30 %) o nulos
+No se usan
+13
+13
+
+8
+Datos
+CineStart · Fase 1 · Documentación y diseño técnico
+Fuente o fuentes
+TMDB 5000 Movie Dataset (Kaggle): movies + credits · API de TMDB: solo lo que falta (pósters, reparto, sinopsis en castellano) y búsquedas
+Licencia
+Uso no comercial con atribución a TMDB (logo y aviso en la web) · los CSV no se suben al repo
+Tipo de datos
+Tabular (CSV) con 7 columnas de JSON en texto y texto libre (sinopsis)
+Volumen estimado
+4.803 películas · 24 columnas · ~45 MB
+Frecuencia de actualización
+CSV estático (hasta 02/2017) · API: una vez por película y en búsquedas fuera del catálogo; todo se guarda
+Calidad esperada
+Media: budget / revenue a 0 (22–30 %), 8,6 % sin keywords, 411 películas con < 10 votos
+Riesgos de datos
+Sesgo de idioma (94 % inglés) y de popularidad · catálogo antiguo · notas inestables con pocos votos
+Los datos son:
+✓
+Reales
+Catálogo de películas (TMDB)
+✓
+Simulados
+Datos de uso para las demos del panel (script)
+✓
+Mockeados
+Respuestas de la API para el frontend mientras se desarrolla
+Usuarios y valoraciones: cuentas de prueba del equipo y compañeros, sin usuarios reales externos.
+14
+14
+
+9
+Ética, legalidad y accesibilidad
+CineStart · Fase 1 · Documentación y diseño técnico
+Datos personales (IIP)
+En la base de datos, solo el alias y el hash de la contraseña. El email del usuario se guarda aparte, en el servicio en la nube. Sin nombre, edad ni ubicación. No se usa el campo de género del reparto.
+Cumplimiento GDPR
+Minimización y finalidad única · derecho de supresión (borrado en cascada) y de acceso · aviso de privacidad · a TMDB nunca se envían datos de usuarios.
+Riesgos de sesgo
+Popularidad (los éxitos lo acaparan) · burbuja de filtro · catálogo 94 % en inglés y anterior a 2017 · notas inestables con pocos votos.
+Medidas de mitigación
+Cuota y bonus de cola larga; KPI de novedad
+Máximo 3 películas por género; KPI de diversidad
+Nota ponderada en lugar de la media
+El usuario corrige su lista valorando o descartando
+Limitaciones del catálogo declaradas en la web
+Accesibilidad básica prevista
+Contraste AA y tamaños de texto relativos
+Texto alternativo en pósters (título y año)
+Navegación completa por teclado
+Estrellas con aria-label y manejo con flechas
+Diseño adaptable; errores en texto, no solo color
+15
+15
+
+10
+Backlog inicial (1/2)
+12 historias de usuario · 8 de usuario y 4 de administrador
+CineStart · Fase 1 · Documentación y diseño técnico
+ID
+Descripción
+Criterios de aceptación
+HU-01
+Como usuario nuevo, quiero registrarme con alias, email y contraseña para tener mi perfil
+Alias único (3–30 car.) · contraseña ≥ 8 car. guardada con bcrypt · alias repetido → error claro · email guardado en la nube, no en la BD
+HU-02
+Como usuario, quiero iniciar y cerrar sesión para acceder a mis recomendaciones
+Credenciales correctas → JWT · incorrectas → error sin indicar qué campo · cuenta desactivada no entra
+HU-03
+Como usuario nuevo, quiero indicar mis géneros favoritos para que la selección se ajuste a mí
+Elijo de 0 a 3 géneros de 20 · puedo saltar el paso · se guarda en user_genre
+HU-04
+Como usuario nuevo, quiero valorar unas películas para que el sistema conozca mis gustos
+~20 películas de clusters distintos · 1–5 ★ o «No la he visto» · no continúo con < 3 valoraciones
+HU-05
+Como usuario, quiero ver 10 recomendaciones con póster para decidir qué ver
+Carga en < 1 s · sin valoradas ni descartadas · máx. 3 por género · póster de respaldo
+HU-06
+Como usuario, quiero buscar una película por título para encontrarla aunque no esté en el catálogo
+Busca primero en el catálogo · si no está, se pide a TMDB · lo nuevo se guarda y entra en las recomendaciones
+16
+16
+
+10
+Backlog inicial (2/2)
+12 historias de usuario · 8 de usuario y 4 de administrador
+CineStart · Fase 1 · Documentación y diseño técnico
+ID
+Descripción
+Criterios de aceptación
+HU-07
+Como usuario, quiero valorar o descartar una recomendación para que la lista mejore
+La película desaparece y la lista se recalcula · la valoración se guarda con source = recommendation
+HU-08
+Como usuario, quiero ver, editar y borrar mis valoraciones y mi cuenta para controlar mis datos
+Listado editable · borrar la cuenta pide confirmación y elimina todo en cascada
+HU-09
+Como admin, quiero ver los KPIs del recomendador para saber si funciona y da visibilidad al catálogo
+Cobertura, diversidad, novedad y aceptación con su definición · filtro por fechas · solo rol admin
+HU-10
+Como admin, quiero buscar películas y ver cuáles no se recomiendan nunca para detectar catálogo sin visibilidad
+Búsqueda por título · filtro «nunca recomendadas» · solo consulta: no puede ocultar películas ni vetar géneros
+HU-11
+Como admin, quiero gestionar cuentas de usuario para atender bajas y abusos
+Listado con alias, alta y nº valoraciones · desactivar / reactivar · borrar con confirmación · nunca muestra el hash
+HU-12
+Como admin, quiero ver el uso de la aplicación para detectar problemas en el onboarding
+Gráficas de registros, % de onboarding completado y valoraciones / descartes por día
+17
+17
+
+11
+Plan de trabajo: cronograma por semanas
+Hitos: NF2 14/10 (S3) · NF3 12/11 (S7) · NF4 10/12 (S11)
+CineStart · Fase 1 · Documentación y diseño técnico
+Tarea
+Responsable
+S1
+28/09
+S2
+05/10
+S3
+12/10
+S4
+19/10
+S5
+26/10
+S6
+02/11
+S7
+09/11
+S8
+16/11
+S9
+23/11
+S10
+30/11
+S11
+07/12
+Documentación NF2
+Todos
+Repositorio, Docker Compose y CI
+Pedro
+EDA, limpieza e ingesta en BD
+Ramón
+Cliente API TMDB (pósters, sinopsis)
+Ramón
+Features, KMeans y popularidad
+Roberto
+Motor híbrido, reglas y buscador
+Roberto
+API: auth y endpoints de usuario
+Pedro
+Web de usuario
+Todos
+API y panel admin con KPIs
+Todos
+Coherencia, tests y ajuste del motor
+Roberto / Ramón
+Accesibilidad y pulido
+Todos
+Memoria final y presentación
+Todos
+18
+18
+
+11
+Plan de trabajo: hitos y reparto
+CineStart · Fase 1 · Documentación y diseño técnico
+Hitos principales
+H1 · NF2 (14/10): documentación y repositorio
+H2 · Datos listos (25/10): ingesta + API TMDB + BD
+H3 · NF3 (12/11): versión funcional de principio a fin
+H4 · Panel y pulido (29/11): admin, tests, accesibilidad
+H5 · NF4 (10/12): entrega final y presentación
+Dependencias
+Motor ← datos limpios en PostgreSQL y MongoDB (H2)
+Endpoints de recomendación ← motor + Parquet
+Web ← contrato OpenAPI fijado en la NF2 (mocks mientras tanto)
+KPIs ← tabla recommendations + usuarios de prueba
+Reparto de tareas
+Ramón (Data): ingesta, limpieza, API TMDB, BD
+Roberto (ML): features, KMeans, motor, reglas
+Pedro (Platform): API, auth, Docker, CI
+Todos (Frontend): web, panel admin, KPIs, docs
+Apoyo cruzado: Data ↔ ML · Platform ↔ Front
+Riesgos técnicos
+Datos sucios (JSON en texto, ceros, huecos)
+Fallos o límites de la API de TMDB
+Demasiado alcance (2 BD + panel + auth)
+Bloqueos entre roles · integración Docker
+Detalle con impacto y mitigación en el punto 13
+19
+19
+
+12
+Estrategia de desarrollo
+CineStart · Fase 1 · Documentación y diseño técnico
+Flujo Git (branches)
+GitHub Flow: main protegida, solo por pull request
+Ramas feature/HU-xx-descripcion, fix/… y docs/…
+Cada tarea con su issue en GitHub Projects, enlazada a la PR
+Cómo se integrará el código
+PR con 1 revisión aprobada de otro miembro
+CI en verde: ruff + pytest + build del frontend
+Squash merge a main
+Decisiones técnicas en docs/decisiones.md
+Cómo se validará la funcionalidad
+Una HU está terminada cuando cumple sus criterios de aceptación
+Demo en la reunión semanal y revisión del tablero
+Pruebas de coherencia del recomendador
+Cómo se hará el testing básico
+pytest: limpieza, nota ponderada, score, reglas
+TestClient de FastAPI: auth, roles y endpoints
+Pruebas de coherencia ejecutadas en la CI
+Frontend: checklist manual + Lighthouse
+20
+20
+
+13
+Riesgos técnicos actualizados
+CineStart · Fase 1 · Documentación y diseño técnico
+Riesgo
+Impacto
+Probabilidad
+Plan de mitigación
+Sin valoraciones reales: no hay colaborativo ni métricas de acierto
+Medio
+Segura
+Contenido + popularidad; validación con pruebas de coherencia y KPIs; colaborativo opcional
+Catálogo limitado (4.803) y anterior a 2017
+Bajo
+Segura
+El buscador lo amplía con TMDB; lo nuevo se guarda y entra en el motor
+Datos sucios (JSON en texto, ceros como nulos, huecos)
+Medio
+Alta
+Pipeline con validaciones, tests de limpieza y respaldo por género o popularidad
+Fallos o límites de la API de TMDB
+Bajo
+Media
+Se guarda todo lo consultado, reintentos y control de ritmo; si falla, el buscador usa solo el catálogo e imagen de respaldo
+Sesgo de popularidad o de idioma
+Medio
+Alta
+Cuota y bonus de cola larga, diversidad y KPIs en el panel
+Demasiado alcance (2 BD + panel + auth)
+Alto
+Media
+Núcleo cerrado; opcionales solo después de H3
+Bloqueos entre roles (web sin API, motor sin datos)
+Medio
+Media
+Contrato OpenAPI en la NF2, mocks y datos de muestra
+Vulnerabilidades en la autenticación
+Alto
+Baja
+bcrypt, JWT con caducidad, roles, secretos en .env, tests de autorización
+21
+21
+
+14
+Repositorio del proyecto
+CineStart · Fase 1 · Documentación y diseño técnico
+Enlace al repositorio
+github.com/PedroDevSV/CineStart
+Estructura
+CineStart/
+├── docs/        NF2 (PDF), arquitectura.png,
+│                modelo_datos.png, especificacion.md
+├── src/
+│   ├── ingestion/   carga, limpieza, API TMDB
+│   ├── models/      features, clustering, motor
+│   ├── api/         FastAPI: auth, usuario, admin
+│   └── web/         React: usuario + /admin
+├── data/        raw/ y processed/ (fuera de git)
+├── environment/ docker-compose, Dockerfiles, .env.example
+├── tests/
+├── README.md
+└── .gitignore
+README.md contiene
+Descripción del proyecto
+Integrantes y roles
+Arquitectura resumida (diagrama)
+Cómo ejecutar: dataset de Kaggle en data/raw/, .env con la API key de TMDB, docker compose up, lanzar el pipeline
+Tecnologías
+Atribución a TMDB
+22
+22

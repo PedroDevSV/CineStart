@@ -11,6 +11,6 @@ python-dotenv>=1.0
 numpy
 pandas
 pyarrow
-scikit-learn
+scikit-learn==1.7.2   # la versión con la que se generó artefactos/model.joblib
 joblib
 scipy
